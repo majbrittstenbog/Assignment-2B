@@ -13,7 +13,6 @@ klubbdata_nodes <- read.csv("klubbdata_nodes.csv")
 ```
 
 _Q1._
-When exploring the klubbdata_edges I can see that the network is undirected and binary by looking at how the nodes match together i.e., the target of the source is one sided.
 ```{r, message=FALSE, warning=FALSE, results = 'hide'}
 # view(klubbdata_edges)
 library(igraph)
@@ -23,28 +22,23 @@ klubb_datanet2 = network(klubbdata_edges, vertices = klubbdata_nodes, directed=F
 ```
 
 _Q2._
-There are 34 actors and 78 ties in the network, as actors are nodes, and ties as edges.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 V(klubb_datanet) # 34 actors
 E(klubb_datanet) # 78 ties
 ```
 
 _Q3._
-The density of the network is 0.1390374, which means there are 13% actual links compared to the number of possible links, which is not highly dense. Mode “graph” is specified as it is an undirected network.
 ```{r, message=FALSE, warning=FALSE, results = 'hide'}
 library(sna)
 gden(klubb_datanet2, mode = "graph") # 0.1390374
 ```
 
 _Q4._
-As I just calculated density for an undirected network, I do not need to divide density by 2.
-On average, nodes have 4.6 edges.
 ```{r, results = 'hide'}
 (34-1)*0.1390374 #4.588234
 ```
 
 _Q5._
-The average shortest path shows that there is 2.4 nodes between every node on the shortest paths.
 ```{r, results = 'hide'}
 library(intergraph)
 igraphklubb <- asIgraph(klubb_datanet2)
@@ -53,9 +47,6 @@ average.path.length(igraphklubb) # 2.4082
 ```
 
 _Q6._
-Seems as 1 and 34 have the most betweenness connections in the network and are therefore quite central. 
-Another way to explore which nodes are the most central is to investigate which nodes has the most edges. Still, 1 and 34 are the most central characters, but with this function, 34 is more central than 1.
-I also included a calculation of eigenvector centrality to find out which nodes are considered most important. The results show that 34 and 1 are the most important, where 34 has a value of .37 and 1 has a value of .35.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 library(dplyr)
 between_klubb <- betweenness(klubb_datanet2)
@@ -69,17 +60,6 @@ evcent(klubb_datanet2, gmode="graph")
 ```
 
 _Q7._
-There are four communities. The community consist of the following sizes:
-Community sizes
- 1  2  3  4 
-12  5 11  6
-The communities are divided in membership:
-igraph.comm_klubb  1  2
-                1 11  1
-                2  5  0
-                3  0 11
-                4  0  6
-It is not hierarchical, and the membership function shows which nodes belong to which communitites. This is also evident in the plot.
 ```{r, message=FALSE, warning=FALSE}
 comm_klubb <- cluster_louvain(klubb_datanet, weights=NULL)
 class(comm_klubb) #now it is communities
@@ -103,8 +83,6 @@ plot(klubb_datanet, vertex.label=klubbdata_nodes$faction)
 ```
 
 _Q8._
-Assortativity shows that a high degree of nodes seems to connect to each other. 
-Further, the chi2 test shows a significance, which means that there is a difference between the cluster and actual membership This is supported by the correlation which shows a high correlation between the clusters and the actual club membership, which when visualised shows a single outlier (the blue 1) which makes the correlation "a bit" lower than 1.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 cluster_klubb <- cluster_edge_betweenness(klubb_datanet)
 cluster_klubb
@@ -138,7 +116,6 @@ force(starwars_tfa)
 ```
 
 _Q9._
-When running summary of my network, it tells me that starwars_net is a directed network.  
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 library(network)
 # view(starwars_tfa)
@@ -148,46 +125,28 @@ summary(starwars_net)
 ```
 
 _Q10._
-Again, looking at the summary i can see that there are 31 vertices (actors) and 149 edges (ties)
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 summary(starwars_net)
 ```
 
 _Q11._
-The density of the network is .16 which means there are 16% actual links compared to the number of possible links. Mode “digraph” is specified as it is a directed network.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 gden(starwars_net, mode = "digraph") # 0.1602151
 ```
 
 _Q12._
-The average degree of the network is 9.6 which means that on average, nodes have 9.6 edges.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 mean(degree(starwars_net))
 # 9.612903
 ```
 
 _Q13._
-The average shortest path shows that there is 1.5 nodes between every node in the shortest paths.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 starwars_geo <- geodist(starwars_net)
 mean(starwars_geo$counts) # 1.532778
 ```
 
 _Q14._
-For the following code I examined who the most important characters are in the movie.
-First, I calculated betweenness centrality. Poe Dameron has the highest betweenness, followed by Kylo Ren and Han Solo.
-
-Then I examinedthe total, indegree and outdegree of the dataset. The following characters were:
-# 1:
-Poe Dameron, 32 total, 16 in, 16 out
-# 2:
-Han Solo, 27 total, 14 in, 13 out
-# 3:
-Finn, 24 total, 12 in, 12out
-
-Kylo Ren was also close but when looking at indegree and outdegree, Finn was the third most important. 
-
-I also ran eigenvector centrality and found that Poe Dameron was nr 1. with .35, Finn as nr 2. with .337, and Han Solo as nr 3 with .334.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 between_starwars <- betweenness(starwars_net)
 between_starwars
@@ -198,6 +157,7 @@ library(tidyverse)
 in_degree <- degree(starwars_net, cmode="indegree")
 out <- degree(starwars_net, cmode="outdegree")
 total_degree <- degree(starwars_net, cmode="freeman")
+
 # names_degree <- bind_cols(names, total_degree, in_degree, out)
 # view(names_degree)
 
@@ -205,21 +165,11 @@ evcent(starwars_net, gmode="digraph")
 ```
 
 _Q15._
-When examining the network, Rey is in row 7. Therefore, I looked at which 'neighborhoods' are connecte to 7 (Rey). It showed, that  3  5 14 10  and 6 were connected to Rey, meaning that Rey interacts with 5 individuals in the movie - which also fits with the out degree (in last question when examining out degree, Rey had 5)
-These five individuals are the individuals Rey interacts with (by viewing the names_degree list):
-**3: Kylo Ren**
-**5: Finn**
-**14: Maz Kanata**
-**10: Han Solo**
-**6: Unkar**
 ```{r, message=FALSE, warning=FALSE, results = 'hide'}
 get.neighborhood(starwars_net, 7) # 3  5 14 10  6
 ```
 
 _Q16._
-The following visualization has been based on degree centrality. First, betweenness centrality was tried but because of the high range in numbers, the plot became unreadable. 
-char-female was made into a factor as it could not be coloured appropriately as an interger variable. 
-Then a palette was made to color by the sex of the character. In this case, Female is salmon, and other is green.
 ```{r,message=FALSE, warning=FALSE, results='hide'}
 library(sna)
 
@@ -235,14 +185,9 @@ palette(c("salmon","mediumseagreen"))
 gplot(starwars_net, vertex.cex=central_degree, vertex.col=sex_of_char_factor, edge.col="steelblue1", label.cex = 0.9, displaylabels = TRUE, label.col="gold1", object.scale = 0.0008, arrowhead.cex=7, main= "Starwars network")
 ```
 
-_Q17._
-Both networks are quite small in nodes and edges compared to real-life networks. These networks would maybe be more similar to local networks or micro networks. The two networks in this assignment has a somewhat high total number of edges compared to the table of real-life social networks. etc. student dating network has 1.66 whereas both starwars and klubbdata has more that 4 on average. The clustering coefficient is also quite low for the student dating network whereas for clubbdata it is very high. In the table, "company directors" is the closest network in terms of cluster compared to klubbdata. It might therefore seem unlikely to have such a high cluster coefficient in real life, as there typically would be much more variation. 
-
-
 ## **Part B**
 
 _Create a social network (e.g. friends, relatives, classmates etc.) with at least 16 actors._
-I created my friend group where I was the starting point (Majbritt). It has 16 actors and 28 ties.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 me <- graph.empty(directed = FALSE)
 
@@ -289,7 +234,6 @@ E(me) # 28
 ```
 
 _Q18._
-Seed was set to 16, and then a random network and a small world network was created with the same attributes as my friend network. nodes and edges was defined for random graph, but only nodes could be defined for the small world network.
 ```{r, message=FALSE, warning=FALSE, results = 'hide'}
 average.path.length(me)
 set.seed(16)
@@ -328,11 +272,6 @@ plot(small_world, layout=layout_with_kk, main="Small world")
 ```
 
 _Q20._
-Betweenness shows that 1: majbritt, 2: Agnes, 3: K, 4: Amalie, and 5: Dennis + Rasmus has the higest betweenness centrality.
-Degree centrality shows that 1: Majbritt and 2: Agnes has the highest centrality and 3-5: K, Louis, Carl & Christoffer has the same centrality.
-For closeness centrality it is evident that again 1: Majbritt and 2: Agnes has the highest closeness centrality and 3-5: K, louis, carl, christoffer has the same. 
-As most of the centrality tests makes it hard to make uot the most central characters beyond Majbritt and Agnes, a eigenvector centrality test was run as well. It showed the following: 1: Majbritt (.43), 2: Agnes (.39), 3: Louis & Christoffer (.38...9), 4: Carl (.38...4), and 5: K (.37).
-As it is evident, the order is a bit different as K is number 5 compared to betweenness centrality, but overall it is the same characters that are mentioned.
 ```{r,message=FALSE, warning=FALSE, results = 'hide'}
 library(intergraph)
 library(network)
